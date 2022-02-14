@@ -38,9 +38,9 @@ flows = numpy.zeros(nElevationCenters+1)       # sets up an array of zeros for e
 fig, ax = plt.subplots()        # one axis graph
 ax.plot(elevations)             # what to plot on graph
 plt.title(f"Ice Sheet Simulator", fontsize= 20, weight='bold')
-plt.xlabel("Elevation Points")
+plt.xlabel("Elevation Points (0 and 11 represent water)")
 plt.ylabel("Elevation in Meters")
-plt.xticks(numpy.arange(0, 11, 1))
+plt.xticks(numpy.arange(0, 12, 1))
 ax.set_ylim([0,4000])           # setting a limit on how high up the y-axis plots data
 plt.show(block=False)           # throw plot on screen and continue on
 
@@ -48,23 +48,23 @@ for step in range(0, timeStep):
     for i in range(0, nElevationCenters+1):
         flows[i] = (elevations[i]-elevations[i+1])/subPlaneWidth * flowParam * (elevations[i]+elevations[i+1])/2/subPlaneWidth
     for j in range(1, nElevationCenters+1):
-        elevations[j]+= timeStep*(snowFall+flows[j-1]-flows[j]) #snowFall with flows[j-1] coming/going and flow[j] coming/going depending on side of hill
-    projectedYear = step*timeStepLength
-    print('year', projectedYear)
-    if projectedYear==totalYears:
+        elevations[j]+= timeStepLength*(snowFall+flows[j-1]-flows[j]) #snowFall with flows[j-1] coming/going and flow[j] coming/going depending on side of hill
+    currentYear = step*timeStepLength
+    print('year', currentYear)
+    if currentYear==totalYears:
         break
     ax.clear()
     ax.plot(elevations)
-    plt.xticks(numpy.arange(0, 11, 1))
+    plt.xticks(numpy.arange(0, 12, 1))
     plt.title(f"Ice Sheet Simulator", fontsize=20, weight='bold')
-    plt.xlabel("Elevation Points")
+    plt.xlabel("Elevation Points (0 and 11 represent water)")
     plt.ylabel("Elevation in Meters")
     ax.set_ylim([0,4000])
     plt.show(block=False)
     plt.pause(0.1)
     fig.canvas.draw()
 
-print('year', projectedYear+timeStepLength)   
+print('year', currentYear+timeStepLength)   
 print('\nFinished!')
 print(f'Highest elevation point is {max(elevations)} m.\n')
 
