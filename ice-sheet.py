@@ -11,19 +11,19 @@ Created on Thu Jul 15 22:41:57 2021
 import numpy
 import matplotlib.pyplot as plt
 
-nGridCenters = 10                                   # number of grid points
-totalPlaneWidth = 1000000                           # meters
-gridWidth = totalPlaneWidth/nGridCenters            # distance between grid centers
+nElevationCenters = 10                                   # number of grid points
+totalPlaneWidth = 1000000                                # meters
+subPlaneWidth = totalPlaneWidth/nElevationCenters        # distance between grid centers
 
 timeStepLength = 100                              # length of each timeStep
 totalYears = 15000                                # how many years we want the simulation to run in total (20000)
 timeStep = int(totalYears/timeStepLength)         # number of timeSteps to take
 
-flowParam = 10000             # m horizontal / yr
 snowFall = 0.5                # m / yr
+flowParam = 10000             # m horizontal / yr
 
-elevations = numpy.zeros(nGridCenters+2)  # sets up an array of zeros for each elevations (and boundaries)
-flows = numpy.zeros(nGridCenters+1)       # sets up an array of zeros for each flow
+elevations = numpy.zeros(nElevationCenters+2)  # sets up an array of zeros for each elevations (and boundaries)
+flows = numpy.zeros(nElevationCenters+1)       # sets up an array of zeros for each flow
 
 #  Visual:
 #  eX = value in "elevations" list (numbered as per index); e0 and e11 always equal zero
@@ -38,13 +38,13 @@ flows = numpy.zeros(nGridCenters+1)       # sets up an array of zeros for each f
 fig, ax = plt.subplots()        # one axis graph
 ax.plot(elevations)             # what to plot on graph
 plt.xticks(numpy.arange(0, 11, 1))
-ax.set_ylim([0,4000])           # setting a limit on how high up the y-axis plots data before stopping
+ax.set_ylim([0,4000])           # setting a limit on how high up the y-axis plots data
 plt.show(block=False)           # throw plot on screen and continue on
 
 for iTime in range(0, timeStep):
-    for i in range(0, nGridCenters+1):
-        flows[i] = (elevations[i]-elevations[i+1])/gridWidth * flowParam * (elevations[i]+elevations[i+1])/2/gridWidth
-    for j in range(1, nGridCenters+1):
+    for i in range(0, nElevationCenters+1):
+        flows[i] = (elevations[i]-elevations[i+1])/subPlaneWidth * flowParam * (elevations[i]+elevations[i+1])/2/subPlaneWidth
+    for j in range(1, nElevationCenters+1):
         elevations[j]+= timeStep*(snowFall+flows[j-1]-flows[j]) #snowFall with flows[j-1] coming/going and flow[j] coming/going depending on side of hill
     projectedYear = iTime*timeStep
     print('year', projectedYear)
