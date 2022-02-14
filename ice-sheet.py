@@ -16,11 +16,11 @@ totalPlaneWidth = 1000000                                # meters
 subPlaneWidth = totalPlaneWidth/nElevationCenters        # distance between grid centers
 
 timeStepLength = 100                              # length of each timeStep
-totalYears = 15000                                # how many years we want the simulation to run in total (20000)
+totalYears = 13000                                # how many years we want the simulation to run in total (20000)
 timeStep = int(totalYears/timeStepLength)         # number of timeSteps to take
 
 snowFall = 0.5                # m / yr
-flowParam = 10000             # m horizontal / yr
+flowParam = 10000             # horizontal "movement" of snow / yr
 
 elevations = numpy.zeros(nElevationCenters+2)  # sets up an array of zeros for each elevations (and boundaries)
 flows = numpy.zeros(nElevationCenters+1)       # sets up an array of zeros for each flow
@@ -37,27 +37,34 @@ flows = numpy.zeros(nElevationCenters+1)       # sets up an array of zeros for e
 
 fig, ax = plt.subplots()        # one axis graph
 ax.plot(elevations)             # what to plot on graph
+plt.title(f"Ice Sheet Simulator", fontsize= 20, weight='bold')
+plt.xlabel("Elevation Points")
+plt.ylabel("Elevation in Meters")
 plt.xticks(numpy.arange(0, 11, 1))
 ax.set_ylim([0,4000])           # setting a limit on how high up the y-axis plots data
 plt.show(block=False)           # throw plot on screen and continue on
 
-for iTime in range(0, timeStep):
+for step in range(0, timeStep):
     for i in range(0, nElevationCenters+1):
         flows[i] = (elevations[i]-elevations[i+1])/subPlaneWidth * flowParam * (elevations[i]+elevations[i+1])/2/subPlaneWidth
     for j in range(1, nElevationCenters+1):
         elevations[j]+= timeStep*(snowFall+flows[j-1]-flows[j]) #snowFall with flows[j-1] coming/going and flow[j] coming/going depending on side of hill
-    projectedYear = iTime*timeStep
+    projectedYear = step*timeStepLength
     print('year', projectedYear)
     if projectedYear==totalYears:
         break
     ax.clear()
     ax.plot(elevations)
     plt.xticks(numpy.arange(0, 11, 1))
+    plt.title(f"Ice Sheet Simulator", fontsize=20, weight='bold')
+    plt.xlabel("Elevation Points")
+    plt.ylabel("Elevation in Meters")
     ax.set_ylim([0,4000])
     plt.show(block=False)
     plt.pause(0.1)
     fig.canvas.draw()
-    
+
+print('year', projectedYear+timeStepLength)   
 print('\nFinished!')
 print(f'Highest elevation point is {max(elevations)} m.\n')
 
